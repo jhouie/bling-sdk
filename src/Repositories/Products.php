@@ -3,6 +3,7 @@
 namespace Bling\Repositories;
 
 use Bling\Client;
+use InvalidArgumentException;
 use Spatie\ArrayToXml\ArrayToXml;
 
 class Products
@@ -30,7 +31,24 @@ class Products
     /**
      * @var array
      */
-    private array $requestOptions;
+    private array $requestOptions = [];
+
+    /**
+     * @var array
+     */
+    private array $filters = [];
+
+    /**
+     * @var string[]
+     */
+    protected static array $availableFilters = [
+        'dataInclusao',
+        'dataAlteracao',
+        'dataAlteracaoLoja',
+        'dataInclusaoLoja',
+        'situacao',
+        'tipo',
+    ];
 
     /**
      * @param Client $client
@@ -45,7 +63,8 @@ class Products
      */
     public function all(): array
     {
-        $this->parseRequestOptions();
+        $this->parseRequestOptions()
+             ->parseRequestFilters();
 
         $url = "produtos/json";
 
@@ -114,26 +133,29 @@ class Products
      *
      * @return bool
      */
-    public function delete(string $productCode)
+    public function delete(string $productCode): bool
     {
         return (bool) $this->client->delete("produto/{$productCode}/json/");
     }
 
     /**
-     * @param array  $product
-     * @param string $productCode
+     * @param array $filters
      *
-     * @return array|false
+     * @return Products
+     *
+     * @throws InvalidArgumentException
      */
-    private function save(array $product, string $productCode = '')
+    public function setFilters(array $filters): Products
     {
-        $url = ! empty($productCode) ? "produto/{$productCode}/json/" : 'produto/json/';
+        foreach ($filters as $key => $value) {
+            if (! in_array($key, static::$availableFilters)) {
+                throw new InvalidArgumentException("The given filter '{$key}' is invalid.");
+            }
 
-        $response = $this->client->post($url, [
-            'xml' => $this->createXmlString($product),
-        ]);
+            $this->filters[$key] = $value;
+        }
 
-        return $response ? $response['produtos'][0]['produto'] : false;
+        return $this;
     }
 
     /**
@@ -157,6 +179,23 @@ class Products
     }
 
     /**
+     * @param array  $product
+     * @param string $productCode
+     *
+     * @return array|false
+     */
+    private function save(array $product, string $productCode = '')
+    {
+        $url = ! empty($productCode) ? "produto/{$productCode}/json/" : 'produto/json/';
+
+        $response = $this->client->post($url, [
+            'xml' => $this->createXmlString($product),
+        ]);
+
+        return $response ? $response['produtos'][0]['produto'] : false;
+    }
+
+    /**
      * @return Products
      */
     protected function parseRequestOptions(): Products
@@ -171,6 +210,24 @@ class Products
 
         if (! empty($this->storeId)) {
             $this->requestOptions['loja'] = $this->storeId;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Products
+     */
+    protected function parseRequestFilters(): Products
+    {
+        if (! empty($this->filters)) {
+            $filters = [];
+
+            foreach ($this->filters as $filter => $value) {
+                $filters[] = $filter . '[' . $value . ']';
+            }
+
+            $this->requestOptions['filters'] = implode(';', $filters);
         }
 
         return $this;
