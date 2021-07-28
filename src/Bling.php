@@ -4,6 +4,7 @@ namespace Bling;
 
 use Bling\Repositories\Categories;
 use Bling\Repositories\Products;
+use Bling\Repositories\Warehouses;
 use InvalidArgumentException;
 
 class Bling
@@ -42,5 +43,13 @@ class Bling
     public function categories(): Categories
     {
         return new Categories($this->client);
+    }
+
+    /**
+     * @return Warehouses
+     */
+    public function warehouses(): Warehouses
+    {
+        return new Warehouses($this->client);
     }
 }
