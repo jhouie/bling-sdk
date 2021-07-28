@@ -13,6 +13,26 @@ class Products
     protected Client $client;
 
     /**
+     * @var bool
+     */
+    protected bool $includeImages = false;
+
+    /**
+     * @var bool
+     */
+    protected bool $includeStock = false;
+
+    /**
+     * @var string
+     */
+    protected string $storeId = '';
+
+    /**
+     * @var array
+     */
+    private array $requestOptions;
+
+    /**
      * @param Client $client
      */
     public function __construct(Client $client)
@@ -25,9 +45,14 @@ class Products
      */
     public function all(): array
     {
+        $this->parseRequestOptions();
+
         $url = "produtos/json";
 
-        $request = $this->client->get($url);
+        $request = $this->client->get(
+            $url,
+            $this->requestOptions
+        );
 
         if (! $request) {
             return [];
@@ -49,7 +74,12 @@ class Products
      */
     public function find(string $productCode)
     {
-        $response = $this->client->get("produto/{$productCode}/json/");
+        $this->parseRequestOptions();
+
+        $response = $this->client->get(
+            "produto/{$productCode}/json/",
+            $this->requestOptions
+        );
 
         if ($response && ! empty($response['produtos'])) {
             return array_shift($response['produtos'])['produto'];
@@ -80,6 +110,16 @@ class Products
     }
 
     /**
+     * @param string $productCode
+     *
+     * @return bool
+     */
+    public function delete(string $productCode)
+    {
+        return (bool) $this->client->delete("produto/{$productCode}/json/");
+    }
+
+    /**
      * @param array  $product
      * @param string $productCode
      *
@@ -94,6 +134,46 @@ class Products
         ]);
 
         return $response ? $response['produtos'][0]['produto'] : false;
+    }
+
+    /**
+     * @return Products
+     */
+    public function withImages(): Products
+    {
+        $this->includeImages = true;
+
+        return $this;
+    }
+
+    /**
+     * @return Products
+     */
+    public function withStock(): Products
+    {
+        $this->includeStock = true;
+
+        return $this;
+    }
+
+    /**
+     * @return Products
+     */
+    protected function parseRequestOptions(): Products
+    {
+        if ($this->includeImages) {
+            $this->requestOptions['imagem'] = 'S';
+        }
+
+        if ($this->includeStock) {
+            $this->requestOptions['estoque'] = 'S';
+        }
+
+        if (! empty($this->storeId)) {
+            $this->requestOptions['loja'] = $this->storeId;
+        }
+
+        return $this;
     }
 
     /**
