@@ -5,7 +5,7 @@ namespace Bling;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Psr7\Uri;
 
-class Client
+final class Client
 {
     /**
      * @var string
