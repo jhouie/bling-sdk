@@ -2,6 +2,7 @@
 
 namespace Bling;
 
+use Bling\Repositories\Categories;
 use Bling\Repositories\Products;
 use ErrorException;
 
@@ -33,5 +34,13 @@ class Bling
     public function products(): Products
     {
         return new Products($this->client);
+    }
+
+    /**
+     * @return Categories
+     */
+    public function categories(): Categories
+    {
+        return new Categories($this->client);
     }
 }
