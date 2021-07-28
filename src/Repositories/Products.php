@@ -2,17 +2,10 @@
 
 namespace Bling\Repositories;
 
-use Bling\Client;
-use InvalidArgumentException;
 use Spatie\ArrayToXml\ArrayToXml;
 
-class Products
+class Products extends BaseRepository
 {
-    /**
-     * @var Client
-     */
-    protected Client $client;
-
     /**
      * @var bool
      */
@@ -29,16 +22,6 @@ class Products
     protected string $storeId = '';
 
     /**
-     * @var array
-     */
-    private array $requestOptions = [];
-
-    /**
-     * @var array
-     */
-    private array $filters = [];
-
-    /**
      * @var string[]
      */
     protected static array $availableFilters = [
@@ -49,14 +32,6 @@ class Products
         'situacao',
         'tipo',
     ];
-
-    /**
-     * @param Client $client
-     */
-    public function __construct(Client $client)
-    {
-        $this->client = $client;
-    }
 
     /**
      * @return array
@@ -139,26 +114,6 @@ class Products
     }
 
     /**
-     * @param array $filters
-     *
-     * @return Products
-     *
-     * @throws InvalidArgumentException
-     */
-    public function setFilters(array $filters): Products
-    {
-        foreach ($filters as $key => $value) {
-            if (! in_array($key, static::$availableFilters)) {
-                throw new InvalidArgumentException("The given filter '{$key}' is invalid.");
-            }
-
-            $this->filters[$key] = $value;
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Products
      */
     public function withImages(): Products
@@ -216,29 +171,9 @@ class Products
     }
 
     /**
-     * @return Products
+     * @inheritDoc
      */
-    protected function parseRequestFilters(): Products
-    {
-        if (! empty($this->filters)) {
-            $filters = [];
-
-            foreach ($this->filters as $filter => $value) {
-                $filters[] = $filter . '[' . $value . ']';
-            }
-
-            $this->requestOptions['filters'] = implode(';', $filters);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param array $data
-     *
-     * @return string
-     */
-    private function createXmlString(array $data): string
+    protected function createXmlString(array $data): string
     {
         if (! empty($data['imagens'])) {
             $images = $data['imagens'];
