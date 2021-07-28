@@ -44,7 +44,7 @@ class Products
     /**
      * @param string $productCode
      *
-     * @return false|Product
+     * @return array|false
      */
     public function find(string $productCode)
     {
