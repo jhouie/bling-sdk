@@ -3,6 +3,8 @@
 namespace Bling;
 
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Uri;
 
 final class Client
@@ -16,6 +18,16 @@ final class Client
      * @var GuzzleClient
      */
     protected GuzzleClient $client;
+
+    /**
+     * @var int
+     */
+    protected int $errorCode = 0;
+
+    /**
+     * @var string
+     */
+    protected string $errorMessage = '';
 
     /**
      * @param string $apiKey
@@ -48,20 +60,50 @@ final class Client
         }
 
         try {
-            $request  = $this->client->request($method, $uri, $options);
+            $request = $this->client->request($method, $uri, $options);
             $response = json_decode($request->getBody(), true);
+            $errors = ! empty($response['retorno']['erros']) ? $response['retorno']['erros'] : [];
+
+            if (! empty($errors)) {
+                $this->handleErrors($errors);
+
+                return false;
+            }
 
             return $response['retorno'];
         } catch (ClientException $ce) {
             $response = json_decode($ce->getResponse()->getBody(), true);
 
+            $this->handleErrors($response['retorno']['erros']);
+
             return $response['retorno']['erros'];
         } catch (GuzzleException $ge) {
             $this->errorCode = 99;
-            $this->errorReason = $ge->getMessage();
+            $this->errorMessage = $ge->getMessage();
 
             return false;
         }
+    }
+
+    /**
+     * @param array $errors
+     *
+     * @return void
+     */
+    private function handleErrors(array $errors): void
+    {
+        $error = ! empty($errors[0]) ? $errors[0] : $errors;
+
+        if (array_key_exists('erro', $error)) {
+            $code = $error['erro']['cod'];
+            $message = $error['erro']['msg'];
+        } else {
+            $code = (int) array_key_first($error);
+            $message = $error[$code];
+        }
+
+        $this->errorCode = $code;
+        $this->errorMessage = $message;
     }
 
     /**
@@ -106,5 +148,21 @@ final class Client
     public function delete(string $uri, array $params = [])
     {
         return $this->request('DELETE', $uri, $params);
+    }
+
+    /**
+     * @return string
+     */
+    public function getErrorMessage(): string
+    {
+        return $this->errorMessage;
+    }
+
+    /**
+     * @return int
+     */
+    public function getErrorCode(): int
+    {
+        return $this->errorCode;
     }
 }
