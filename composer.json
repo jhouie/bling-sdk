@@ -13,7 +13,8 @@
     "require": {
         "php": "^7.4|^8.0",
         "ext-json": "*",
-        "guzzlehttp/guzzle": "^7.3"
+        "guzzlehttp/guzzle": "^7.3",
+        "spatie/array-to-xml": "^2.16"
     },
     "autoload": {
         "psr-4": {

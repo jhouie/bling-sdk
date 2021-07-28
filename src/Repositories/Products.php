@@ -3,6 +3,7 @@
 namespace Bling\Repositories;
 
 use Bling\Client;
+use Spatie\ArrayToXml\ArrayToXml;
 
 class Products
 {
@@ -55,5 +56,35 @@ class Products
         }
 
         return false;
+    }
+
+    /**
+     * @param array $product
+     *
+     * @return false|array
+     */
+    public function create(array $product)
+    {
+        $response = $this->client->post('produto/json/', [
+            'xml' => $this->createXmlString($product),
+        ]);
+
+        return $response ? $response['produtos'][0]['produto'] : false;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return string
+     */
+    private function createXmlString(array $data): string
+    {
+        if (! empty($data['images'])) {
+            foreach ($data['images'] as $key => $url) {
+                $data['imagens']['__custom:url:' . $key] = $url;
+            }
+        }
+
+        return ArrayToXml::convert($data, 'produto');
     }
 }
