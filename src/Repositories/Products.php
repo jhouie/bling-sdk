@@ -2,8 +2,6 @@
 
 namespace Bling\Repositories;
 
-use Spatie\ArrayToXml\ArrayToXml;
-
 class Products extends BaseRepository
 {
     /**
@@ -34,53 +32,14 @@ class Products extends BaseRepository
     ];
 
     /**
-     * @return array
+     * @var string
      */
-    public function all(): array
-    {
-        $this->parseRequestOptions()
-             ->parseRequestFilters();
-
-        $url = "produtos/json";
-
-        $request = $this->client->get(
-            $url,
-            $this->requestOptions
-        );
-
-        if (! $request) {
-            return [];
-        }
-
-        if (! empty($request['produtos'])) {
-            return array_map(function ($item) {
-                return $item['produto'];
-            }, $request['produtos']);
-        }
-
-        return [];
-    }
+    protected string $resourceNamePlural = 'produtos';
 
     /**
-     * @param string $productCode
-     *
-     * @return array|false
+     * @var string
      */
-    public function find(string $productCode)
-    {
-        $this->parseRequestOptions();
-
-        $response = $this->client->get(
-            "produto/{$productCode}/json/",
-            $this->requestOptions
-        );
-
-        if ($response && ! empty($response['produtos'])) {
-            return array_shift($response['produtos'])['produto'];
-        }
-
-        return false;
-    }
+    protected string $resourceNameSingular = 'produto';
 
     /**
      * @param array $product
@@ -185,6 +144,6 @@ class Products extends BaseRepository
             }
         }
 
-        return ArrayToXml::convert($data, 'produto');
+        return parent::createXmlString($data);
     }
 }
