@@ -4,7 +4,7 @@ namespace Bling;
 
 use Bling\Repositories\Categories;
 use Bling\Repositories\Products;
-use ErrorException;
+use InvalidArgumentException;
 
 class Bling
 {
@@ -17,12 +17,12 @@ class Bling
      * @param string $apiKey
      * @param string $baseUri
      *
-     * @throws ErrorException
+     * @throws InvalidArgumentException
      */
     public function __construct(string $apiKey, string $baseUri)
     {
         if (empty($apiKey)) {
-            throw new ErrorException("Empty API key provided.");
+            throw new InvalidArgumentException("Empty API key provided.");
         }
 
         $this->client = new Client($apiKey, $baseUri);
