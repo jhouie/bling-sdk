@@ -42,27 +42,6 @@ class Products extends BaseRepository
     protected string $resourceNameSingular = 'produto';
 
     /**
-     * @param array $product
-     *
-     * @return array|false
-     */
-    public function create(array $product)
-    {
-        return $this->save($product);
-    }
-
-    /**
-     * @param string $productCode
-     * @param array  $product
-     *
-     * @return array|false
-     */
-    public function update(string $productCode, array $product)
-    {
-        return $this->save($product, $productCode);
-    }
-
-    /**
      * @param string $productCode
      *
      * @return bool
@@ -93,17 +72,17 @@ class Products extends BaseRepository
     }
 
     /**
-     * @param array  $product
-     * @param string $productCode
+     * @param array  $data
+     * @param string $resourceId
      *
      * @return array|false
      */
-    private function save(array $product, string $productCode = '')
+    protected function save(array $data, string $resourceId = '')
     {
-        $url = ! empty($productCode) ? "produto/{$productCode}/json/" : 'produto/json/';
+        $url = ! empty($resourceId) ? "produto/{$resourceId}/json/" : 'produto/json/';
 
         $response = $this->client->post($url, [
-            'xml' => $this->createXmlString($product),
+            'xml' => $this->createXmlString($data),
         ]);
 
         return $response ? $response['produtos'][0]['produto'] : false;

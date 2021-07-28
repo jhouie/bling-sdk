@@ -84,6 +84,58 @@ abstract class BaseRepository
     }
 
     /**
+     * @param array $data
+     *
+     * @return array|false
+     */
+    public function create(array $data)
+    {
+        return $this->save($data);
+    }
+
+    /**
+     * @param array  $data
+     * @param string $resourceId
+     *
+     * @return array|false
+     */
+    public function update(array $data, string $resourceId)
+    {
+        return $this->save($data, $resourceId);
+    }
+
+    /**
+     * @param array  $data
+     * @param string $resourceId
+     *
+     * @return array|false
+     */
+    protected function save(array $data, string $resourceId = '')
+    {
+        $params = [ 'xml' => $this->createXmlString($data) ];
+
+        if (! empty($resourceId)) {
+            $response = $this->client->put(
+                "{$this->resourceNameSingular}/{$resourceId}/json/",
+                $params
+            );
+        } else {
+            $response = $this->client->post(
+                "{$this->resourceNameSingular}/json/",
+                $params
+            );
+        }
+
+        if ($response) {
+            $resource = array_shift($response[$this->resourceNamePlural][0]);
+
+            return $resource[$this->resourceNameSingular];
+        }
+
+        return false;
+    }
+
+    /**
      * @param array $filters
      *
      * @return $this
@@ -99,6 +151,22 @@ abstract class BaseRepository
         }
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getErrorMessage(): string
+    {
+        return $this->client->getErrorMessage();
+    }
+
+    /**
+     * @return int
+     */
+    public function getErrorCode(): int
+    {
+        return $this->client->getErrorCode();
     }
 
     /**
