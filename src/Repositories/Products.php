@@ -61,11 +61,35 @@ class Products
     /**
      * @param array $product
      *
-     * @return false|array
+     * @return array|false
      */
     public function create(array $product)
     {
-        $response = $this->client->post('produto/json/', [
+        return $this->save($product);
+    }
+
+    /**
+     * @param string $productCode
+     * @param array  $product
+     *
+     * @return array|false
+     */
+    public function update(string $productCode, array $product)
+    {
+        return $this->save($product, $productCode);
+    }
+
+    /**
+     * @param array  $product
+     * @param string $productCode
+     *
+     * @return array|false
+     */
+    private function save(array $product, string $productCode = '')
+    {
+        $url = ! empty($productCode) ? "produto/{$productCode}/json/" : 'produto/json/';
+
+        $response = $this->client->post($url, [
             'xml' => $this->createXmlString($product),
         ]);
 
@@ -79,8 +103,12 @@ class Products
      */
     private function createXmlString(array $data): string
     {
-        if (! empty($data['images'])) {
-            foreach ($data['images'] as $key => $url) {
+        if (! empty($data['imagens'])) {
+            $images = $data['imagens'];
+
+            unset($data['imagens']);
+
+            foreach ($images as $key => $url) {
                 $data['imagens']['__custom:url:' . $key] = $url;
             }
         }
