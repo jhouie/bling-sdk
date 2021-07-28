@@ -76,7 +76,7 @@ final class Client
 
             $this->handleErrors($response['retorno']['erros']);
 
-            return $response['retorno']['erros'];
+            return false;
         } catch (GuzzleException $ge) {
             $this->errorCode = 99;
             $this->errorMessage = $ge->getMessage();
