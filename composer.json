@@ -1,0 +1,28 @@
+{
+	"name": "jhouie/bling-sdk",
+	"type": "library",
+    "description": "Unofficial SDK for Bling API",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jhonathas Cavalcante",
+            "email": "jhouie.sc@gmail.com",
+            "role": "developer"
+        }
+    ],
+    "require": {
+        "php": "^7.4|^8.0",
+    },
+    "autoload": {
+        "psr-4": {
+            "Bling\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    }
+}
