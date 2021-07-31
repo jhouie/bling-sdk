@@ -16,17 +16,15 @@ class Bling
 
     /**
      * @param string $apiKey
-     * @param string $baseUri
-     *
-     * @throws InvalidArgumentException
+     * @param array  $options
      */
-    public function __construct(string $apiKey, string $baseUri)
+    public function __construct(string $apiKey, array $options = [])
     {
         if (empty($apiKey)) {
-            throw new InvalidArgumentException("Empty API key provided.");
+            throw new InvalidArgumentException("Empty API key provided.", 2);
         }
 
-        $this->client = new Client($apiKey, $baseUri);
+        $this->client = new Client($apiKey, $options);
     }
 
     /**

@@ -2,10 +2,10 @@
 
 namespace Bling;
 
-use GuzzleHttp\Client as GuzzleClient;
+use Bling\Exceptions\UnauthorizedException;
+use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Psr7\Uri;
 
 final class Client
 {
@@ -15,9 +15,9 @@ final class Client
     protected string $apiKey = '';
 
     /**
-     * @var GuzzleClient
+     * @var HttpClient
      */
-    protected GuzzleClient $client;
+    protected HttpClient $client;
 
     /**
      * @var int
@@ -31,15 +31,15 @@ final class Client
 
     /**
      * @param string $apiKey
-     * @param string $baseUri
+     * @param array  $options
      */
-    public function __construct(string $apiKey, string $baseUri)
+    public function __construct(string $apiKey, array $options)
     {
+        $clientOptions = array_merge([ 'base_uri' => 'https://bling.com.br/Api/v2/' ], $options);
+
         $this->apiKey = $apiKey;
 
-        $this->client = new GuzzleClient([
-            'base_uri' => new Uri($baseUri),
-        ]);
+        $this->client = new HttpClient($clientOptions);
     }
 
     /**
@@ -48,6 +48,8 @@ final class Client
      * @param array  $options
      *
      * @return array|mixed
+     *
+     * @throws UnauthorizedException
      */
     public function request(string $method, string $uri, array $options = [])
     {
@@ -73,8 +75,13 @@ final class Client
             return $response['retorno'];
         } catch (ClientException $ce) {
             $response = json_decode($ce->getResponse()->getBody(), true);
+            $errors = $response['retorno']['erros']['erro'];
 
             $this->handleErrors($response['retorno']['erros']);
+
+            if ($ce->getResponse()->getStatusCode() === 401) {
+                throw new UnauthorizedException($errors['msg'], $errors['cod']);
+            }
 
             return false;
         } catch (GuzzleException $ge) {
@@ -111,6 +118,8 @@ final class Client
      * @param array  $params
      *
      * @return array|mixed
+     *
+     * @throws UnauthorizedException
      */
     public function get(string $uri, array $params = [])
     {
@@ -122,6 +131,8 @@ final class Client
      * @param array  $params
      *
      * @return array|mixed
+     *
+     * @throws UnauthorizedException
      */
     public function post(string $uri, array $params)
     {
@@ -133,6 +144,8 @@ final class Client
      * @param array  $params
      *
      * @return array|mixed
+     *
+     * @throws UnauthorizedException
      */
     public function put(string $uri, array $params)
     {
@@ -144,6 +157,8 @@ final class Client
      * @param array  $params
      *
      * @return false|mixed
+     *
+     * @throws UnauthorizedException
      */
     public function delete(string $uri, array $params = [])
     {
