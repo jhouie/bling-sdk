@@ -1,0 +1,13 @@
+{
+    "retorno": {
+        "categorias": [
+            {
+                "categoria": {
+                    "id": 1234567,
+                    "descricao": "Test Category",
+                    "idCategoriaPai": 1234566
+                }
+            }
+        ]
+    }
+}

@@ -1,0 +1,20 @@
+{
+    "retorno": {
+        "categorias": [
+            {
+                "categoria": {
+                    "id": 1234567,
+                    "descricao": "Test Category 1",
+                    "idCategoriaPai": 1234566
+                }
+            },
+            {
+                "categoria": {
+                    "id": 1234569,
+                    "descricao": "Test Category 2",
+                    "idCategoriaPai": 1234567
+                }
+            }
+        ]
+    }
+}

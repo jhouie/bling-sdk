@@ -1,0 +1,15 @@
+{
+    "retorno": {
+        "categorias": [
+            [
+                {
+                    "categoria": {
+                        "id": 12345,
+                        "descricao": "Updated Category",
+                        "idCategoriaPai": 12344
+                    }
+                }
+            ]
+        ]
+    }
+}
