@@ -61,17 +61,23 @@ $categoryRepository = $bling->categories();
 
 #### List all Categories:
 
+This will return an array of \Bling\Entities\Category instances
+
 ```php
 $categoryRepository->all();
 ```
 
 #### Get a Single Category
 
+This will return an instance of \Bling\Entities\Category
+
 ```php
 $categoryRepository->find('category_id');
 ```
 
 #### Create a Category
+
+This will return an instance of \Bling\Entities\Category
 
 ```php
 $categoryRepository->create([
@@ -81,6 +87,8 @@ $categoryRepository->create([
 ```
 
 #### Update a Category
+
+This will return an instance of \Bling\Entities\Category
 
 ```php
 $categoryRepository->update([
