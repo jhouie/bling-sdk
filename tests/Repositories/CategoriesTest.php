@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 class CategoriesTest extends TestCase
 {
     /** @test */
-    public function listAllCategories()
+    public function itCanListAllCategories()
     {
         $service = $this->mockService([
             new Response(200, [], $this->jsonMock('Categories/All')),
@@ -26,7 +26,7 @@ class CategoriesTest extends TestCase
     }
 
     /** @test */
-    public function getSingleCategory()
+    public function itCanGetASingleCategory()
     {
         $service = $this->mockService([
             new Response(200, [], $this->jsonMock('Categories/Single')),
@@ -42,7 +42,7 @@ class CategoriesTest extends TestCase
     }
 
     /** @test */
-    public function createCategory()
+    public function itCanCreateACategory()
     {
         $service = $this->mockService([
             new Response(201, [], $this->jsonMock('Categories/Create')),
@@ -61,7 +61,7 @@ class CategoriesTest extends TestCase
     }
 
     /** @test */
-    public function updateCategory()
+    public function itCanUdateACategory()
     {
         $service = $this->mockService([
             new Response(200, [], $this->jsonMock('Categories/Update')),
