@@ -9,7 +9,7 @@ class Category
     /**
      * @var int|null
      */
-    private ?int   $id       = null;
+    private ?int $id = null;
 
     /**
      * @var string
@@ -19,7 +19,7 @@ class Category
     /**
      * @var int|null
      */
-    private ?int   $parentId = null;
+    private ?int $parentId = null;
 
     /**
      * @param int $id
