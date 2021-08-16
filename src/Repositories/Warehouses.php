@@ -17,27 +17,21 @@ class Warehouses extends BaseRepository
     protected string $resourceNameSingular = 'deposito';
 
     /**
-     * @var bool
+     * @return Warehouses
      */
-    protected bool $active = false;
+    public function active(): Warehouses
+    {
+        $this->filters['situacao'] = 'A';
 
-    /**
-     * @var bool
-     */
-    protected bool $inactive = false;
+        return $this;
+    }
 
     /**
      * @return Warehouses
      */
-    protected function parseRequestOptions(): Warehouses
+    public function inactive(): Warehouses
     {
-        if ($this->active) {
-            $this->filters['situacao'] = 'A';
-        }
-
-        if ($this->inactive) {
-            $this->filters['situacao'] = 'I';
-        }
+        $this->filters['situacao'] = 'I';
 
         return $this;
     }
