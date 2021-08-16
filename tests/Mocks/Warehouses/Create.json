@@ -1,0 +1,17 @@
+{
+    "retorno": {
+        "depositos": [
+            [
+                {
+                    "deposito": {
+                        "id": 123,
+                        "descricao": "Test Warehouse",
+                        "situacao": "A",
+                        "depositoPadrao": "false",
+                        "desconsiderarSaldo": "false"
+                    }
+                }
+            ]
+        ]
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "retorno": {
+        "depositos": [
+            [
+                {
+                    "deposito": {
+                        "id": 123,
+                        "descricao": "Updated Warehouse",
+                        "situacao": "A",
+                        "depositoPadrao": "false",
+                        "desconsiderarSaldo": "false"
+                    }
+                }
+            ]
+        ]
+    }
+}
