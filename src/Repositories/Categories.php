@@ -21,15 +21,9 @@ class Categories extends BaseRepository
      */
     public function all(): array
     {
-        $result = [];
-
-        if ($categories = parent::all()) {
-            foreach ($categories as $category) {
-                $result[] = $this->parseCategory($category);
-            }
-        }
-
-        return $result;
+        return array_map(function ($category) {
+            return $this->parseCategory($category);
+        }, parent::all());
     }
 
     /**
@@ -39,11 +33,7 @@ class Categories extends BaseRepository
      */
     public function find(string $resourceId)
     {
-        if ($response = parent::find($resourceId)) {
-            return $this->parseCategory($response);
-        }
-
-        return false;
+        return $this->parseCategory(parent::find($resourceId));
     }
 
     /**
@@ -53,11 +43,7 @@ class Categories extends BaseRepository
      */
     public function create(array $data)
     {
-        if ($response = parent::create($data)) {
-            return $this->parseCategory($response);
-        }
-
-        return false;
+        return $this->parseCategory(parent::create($data));
     }
 
     /**
@@ -68,11 +54,7 @@ class Categories extends BaseRepository
      */
     public function update(array $data, string $resourceId)
     {
-        if ($response = parent::update($data, $resourceId)) {
-            return $this->parseCategory($response);
-        }
-
-        return false;
+        return $this->parseCategory(parent::update($data, $resourceId));
     }
 
     /**
