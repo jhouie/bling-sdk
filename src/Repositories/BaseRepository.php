@@ -188,6 +188,14 @@ abstract class BaseRepository
     }
 
     /**
+     * @return string
+     */
+    public function getRequestFilters(): string
+    {
+        return $this->requestOptions['filters'];
+    }
+
+    /**
      * @return $this
      */
     protected function parseRequestOptions(): BaseRepository
