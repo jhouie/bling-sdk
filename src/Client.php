@@ -2,12 +2,13 @@
 
 namespace Bling;
 
+use Bling\Exceptions\BlingException;
 use Bling\Exceptions\UnauthorizedException;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 
-final class Client
+class Client
 {
     /**
      * @var string
@@ -30,6 +31,11 @@ final class Client
     protected string $errorMessage = '';
 
     /**
+     * @var int|null
+     */
+    private ?int $statusCode = null;
+
+    /**
      * @param string $apiKey
      * @param array  $options
      */
@@ -49,7 +55,7 @@ final class Client
      *
      * @return array|mixed
      *
-     * @throws UnauthorizedException
+     * @throws UnauthorizedException|BlingException|GuzzleException
      */
     public function request(string $method, string $uri, array $options = [])
     {
@@ -64,31 +70,18 @@ final class Client
         try {
             $request = $this->client->request($method, $uri, $options);
             $response = json_decode($request->getBody(), true);
-            $errors = ! empty($response['retorno']['erros']) ? $response['retorno']['erros'] : [];
+            $this->statusCode = $request->getStatusCode();
 
-            if (! empty($errors)) {
-                $this->handleErrors($errors);
-
-                return false;
+            if (! empty($response['retorno']['erros'])) {
+                $this->handleErrors($response['retorno']['erros']);
             }
 
             return $response['retorno'];
         } catch (ClientException $ce) {
+            $this->statusCode = $ce->getResponse()->getStatusCode();
             $response = json_decode($ce->getResponse()->getBody(), true);
-            $errors = $response['retorno']['erros']['erro'];
 
             $this->handleErrors($response['retorno']['erros']);
-
-            if ($ce->getResponse()->getStatusCode() === 401) {
-                throw new UnauthorizedException($errors['msg'], $errors['cod']);
-            }
-
-            return false;
-        } catch (GuzzleException $ge) {
-            $this->errorCode = 99;
-            $this->errorMessage = $ge->getMessage();
-
-            return false;
         }
     }
 
@@ -111,6 +104,20 @@ final class Client
 
         $this->errorCode = $code;
         $this->errorMessage = $message;
+
+        if ($code === 2 || $code === 3) {
+            throw new UnauthorizedException($message, $code);
+        }
+
+        throw new BlingException($message, $code);
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getStatusCode(): ?int
+    {
+        return $this->statusCode;
     }
 
     /**
@@ -118,8 +125,6 @@ final class Client
      * @param array  $params
      *
      * @return array|mixed
-     *
-     * @throws UnauthorizedException
      */
     public function get(string $uri, array $params = [])
     {
@@ -131,8 +136,6 @@ final class Client
      * @param array  $params
      *
      * @return array|mixed
-     *
-     * @throws UnauthorizedException
      */
     public function post(string $uri, array $params)
     {
@@ -144,8 +147,6 @@ final class Client
      * @param array  $params
      *
      * @return array|mixed
-     *
-     * @throws UnauthorizedException
      */
     public function put(string $uri, array $params)
     {
@@ -157,8 +158,6 @@ final class Client
      * @param array  $params
      *
      * @return false|mixed
-     *
-     * @throws UnauthorizedException
      */
     public function delete(string $uri, array $params = [])
     {
