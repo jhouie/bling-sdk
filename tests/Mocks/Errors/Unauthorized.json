@@ -1,0 +1,12 @@
+{
+    "retorno": {
+        "erros": [
+            {
+                "erro": {
+                    "cod": 3,
+                    "msg": "API Key invalida"
+                }
+            }
+        ]
+    }
+}

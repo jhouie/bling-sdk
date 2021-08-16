@@ -1,0 +1,7 @@
+{
+    "retorno": {
+        "erros": {
+            "94": "Já existe uma categoria de mesmo nível e pai com a descrição informada"
+        }
+    }
+}

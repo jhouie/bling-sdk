@@ -1,0 +1,7 @@
+{
+    "retorno": {
+        "erros": {
+            "500": "Erro interno"
+        }
+    }
+}
